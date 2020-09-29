@@ -1,0 +1,36 @@
+[user]
+	name = Pull Request Mirror
+	email = csebryam/api-ex-test.git@github.com
+[diff]
+        external = git_diff_wrapper
+[pager]
+        diff =
+[filter "media"]
+	clean = git-media-clean %f
+	smudge = git-media-smudge %f
+[push]
+	default = matching
+[alias]
+	co = checkout
+        st = status -a
+        lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %Cblue<%an>%Creset' --abbrev-commit --date=relative
+        wslog = log --ignore-space-at-eol -p -w -b
+        wsdiff = diff --ignore-space-at-eol -w -b --no-ext-diff
+	appraise = !~/go/bin/git-appraise
+[merge]
+        tool = threesome
+[mergetool "threesome"]
+        cmd = "vim -f $BASE $LOCAL $REMOTE $MERGED -c 'ThreesomeInit'"
+        trustExitCode = true
+# vim: set et :
+[core]
+	excludesfile = /Users/csebryam/.global_ignore
+	editor = vim
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path =
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[commit]
+	template = /Users/csebryam/.stCommitMsg

@@ -3,7 +3,7 @@
 
 # Path to your oh-my-zsh installation.
 # ZSH=$HOME/.oh-my-zsh
-  export ZSH="/Users/csebryam/.oh-my-zsh"
+  export ZSH="$HOME/.oh-my-zsh"
 
 # Postgresql
 # export POSTGRES="/usr/local/pgsql/bin"

@@ -116,7 +116,7 @@ ZSH_THEME_GIT_PROMPT_CLEAN=""
 
 # Dotfiles
 # https://www.atlassian.com/git/tutorials/dotfiles
-alias config='/usr/bin/git --git-dir=/Users/csebryam/dotfiles/ --work-tree=/Users/csebryam'
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 
 # NEOVIM
 alias vim='nvim'

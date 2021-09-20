@@ -8,7 +8,7 @@
 
 
 ### Set the alias in .zshrc
-* `alias config='/usr/bin/git --git-dir=$HOME/.config/ --work-tree=$HOME'`
+* `alias config='/usr/bin/git --git-dir=$HOME/dotfiles/.config/ --work-tree=$HOME'`
 
 ### Check status
 `config status`

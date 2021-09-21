@@ -77,7 +77,14 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git dnf pass)
+plugins=(
+  git
+  ruby
+  rails
+  asdf
+  ag
+  gh
+)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -110,8 +117,8 @@ ZSH_THEME_GIT_PROMPT_CLEAN=""
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+# alias zshconfig="vim ~/.zshrc"
+alias ohmyzsh="vim ~/.oh-my-zsh"
 
 
 # Dotfiles
@@ -174,10 +181,14 @@ function myip() {
 
 # Git shortcuts/alias
 # https://github.com/teto/fzf-gems
-source $HOME/.fzf/shell/fzf_git_keybindings.zsh
-source $HOME/.fzf/shell/fzf_git.zsh
+# Old setup for bindings. Might be worth looking into again for shortcuts
+# source $HOME/.fzf/shell/fzf_git_keybindings.zsh
+# source $HOME/.fzf/shell/fzf_git.zsh
 
 # source $HOME/.zshenv
 # source $HOME/.zprofile
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# ASDF exec
+. /usr/local/opt/asdf/libexec/asdf.sh

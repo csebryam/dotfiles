@@ -17,3 +17,5 @@
   [core]
       excludesfile = ~/.global_ignore
       editor = vim
+[pull]
+      rebase = false

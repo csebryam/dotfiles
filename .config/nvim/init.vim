@@ -1,3 +1,27 @@
+" INSTALL INSTRUCTIONS "
+" Make sure all providers are correctly set up
+" $ checkhealth provider
+"
+" Make sure neovim gem is installed
+" $ gem install neovim
+"
+" Make sure npm neovim is installed
+" $ brew install node
+" $ npm install -g neovim
+"
+" Make sure yarn neovim is installed
+" $ yarn global add neovim
+"
+" Make sure python neovim is installed
+" $ pip3 install --user neovim
+"
+" Make sure pynvim is installed
+" $ pip2 install pynvim
+" $ pip3 install pynvim
+" "
+" When Solar graph is installed, also install this
+" $ pip3 install solargraph-utils.py --user
+
 "set showmode "display current mode
 "set showcmd "display current mode
 " set cursorline "highlight current line
@@ -308,6 +332,20 @@ call plug#begin('~/.config/nvim/plugged')
     let g:doge_doc_standard_ruby = 'YARD'
     let g:doge_mapping  = '<Leader>yg'
 
+  " Install Details
+  " https://blog.schembri.me/post/solargraph-in-vim/
+  " Install solargraph
+  " RUN: $ gem install solargraph
+  " Install Plugin
+  " RUN: vim +PlugInstall +UpdateRemotePlugins +qa
+  " Start solargraph server
+  " RUN: solargraph socket
+  " set runtime path
+  " RUN: set runtimepath+=~/.config/nvim/plugged/LanguageClient-neovim
+  " Make sure it was added to runtimepath
+  " RUN: :echo &runtimepath
+  " RUN: Restart all of the terminals - quit all
+  "
   " This starts the server for Solargraph
   Plug 'autozimu/LanguageClient-neovim', {
         \ 'branch': 'next',
@@ -315,21 +353,22 @@ call plug#begin('~/.config/nvim/plugged')
         \ }
     " Tell the language client to use the default IP and port
     " that Solargraph runs on
-    " https://blog.schembri.me/post/solargraph-in-vim/
-    " let g:LanguageClient_serverCommands = {
-    "       \ 'ruby': ['tcp://localhost:7658']
-    "       \ }
-
 
     let g:LanguageClient_serverCommands = {
-          \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
-          \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
-          \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
-          \ 'python': ['/usr/local/bin/pyls'],
-          \ 'ruby': ['~/.rbenv/versions/2.5.7/bin/solargraph', 'stdio'],
+          \ 'ruby': ['tcp://localhost:7658']
           \ }
-          "\ 'ruby': ['~/.rbenv/shims/solargraph', 'stdio'],
-          "\ }
+
+    " CHANGE: Change rbenv location
+    " let g:LanguageClient_serverCommands = {
+    "   \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
+    "   \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
+    "   \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+    "   \ 'python': ['/usr/local/bin/pyls'],
+    "   \ 'ruby': ['~/.rbenv/versions/2.6.6/bin/solargraph', 'stdio'],
+    "   \ }
+    let g:LanguageClient_serverCommands = {
+      \ 'ruby': ['~/.asdf/shims/solargraph', 'stdio'],
+      \ }
 
     " Don't send a stop signal to the server when exiting vim.
     " This is optional, but I don't like having to restart Solargraph
@@ -341,7 +380,9 @@ call plug#begin('~/.config/nvim/plugged')
 
     nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
     nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-  Plug 'uplus/deoplete-solargraph', { 'do': ':UpdateRemotePlugins' }
+
+  " Depricated
+  " Plug 'uplus/deoplete-solargraph', { 'do': ':UpdateRemotePlugins' }
     " Omni
     " let g:deoplete#sources.ruby = ['tag', 'omni', 'buffer', 'file', 'ultisnips']
     " let g:deoplete#sources.eruby = ['tag', 'omni', 'buffer', 'file', 'ultisnips']
@@ -404,7 +445,7 @@ call plug#begin('~/.config/nvim/plugged')
 
 
     "let g:airline_section_c = '%t'
-    "let g:airline_section_c = '%f'
+    let g:airline_section_c = '%F'
     "let g:airline#extensions#tabline#fnametruncate = 1
     let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
     let g:airline#extensions#tabline#formatter = 'unique_tail'
@@ -423,25 +464,102 @@ call plug#begin('~/.config/nvim/plugged')
 
 
     " Similarly, we can apply it to fzf#vim#grep. To use ripgrep instead of ag:
+    " to exclude files: -g '!exclude'
+    " Original command!
+    " command! -bang -nargs=* Rg
+    "       \ call fzf#vim#grep(
+    "       \   "rg -g '!node_modules' -g '!frontend' --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,
+    "       \   <bang>0 ? fzf#vim#with_preview('up:60%')
+    "       \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+    "       \   <bang>0)
+
+    " command try2
+    " command! -bang -nargs=* Rg
+    "       \ call fzf#vim#grep(
+    "       \   "rg -g '!node_modules' -g '!frontend' --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,
+    "       \   fzf#vim#with_preview('right:45%'), <bang>0)
+
+    " ---------------------------------------------------
+    "
+    " Likewise, Files command with preview window
+    " original Files
+    " command! -bang -nargs=? -complete=dir Files
+    "       \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:45%'), <bang>0)
+
+    " Likewise, Files command with preview window
+    " command! -bang -nargs=? -complete=dir Files
+    "       \ call fzf#vim#files(
+    "       \   "rg -g '!node_modules' -g '!frontend' ".shellescape(<q-args>),
+    "       \   fzf#vim#with_preview('right:45%'), <bang>0)
+
+    " ---------------------------------------------------
+
+    " Likewise, GFiles command with preview window
+    " original Gfiles
+    " command! -bang -nargs=? -complete=dir GFiles
+    "       \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:45%'), <bang>0)
+
+    " command! -bang -nargs=? -complete=dir GFiles
+    "       \ call fzf#vim#files(
+    "       \   "rg -g '!node_modules' -g '!frontend' ".shellescape(<q-args>),
+    "       \   fzf#vim#with_preview('right:45%'), <bang>0)
+
+    " Source For FZF configuration
+    " https://www.chrisatmachine.com/Neovim/08-fzf/
+    " man page: http://manpages.ubuntu.com/manpages/eoan/man1/fzf.1.html
+     let g:fzf_layout = {'up':'~90%', 'window': { 'width': 0.8, 'height': 0.8,'yoffset':0.5,'xoffset': 0.5, 'highlight': 'Todo', 'border': 'sharp' } }
+
+    let g:fzf_colors =
+          \ { 'fg':    ['fg', 'Normal'],
+          \ 'bg':      ['bg', 'Normal'],
+          \ 'hl':      ['fg', 'Comment'],
+          \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+          \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+          \ 'hl+':     ['fg', 'Statement'],
+          \ 'info':    ['fg', 'PreProc'],
+          \ 'border':  ['fg', 'Ignore'],
+          \ 'prompt':  ['fg', 'Conditional'],
+          \ 'pointer': ['fg', 'Exception'],
+          \ 'marker':  ['fg', 'Keyword'],
+          \ 'spinner': ['fg', 'Label'],
+          \ 'header':  ['fg', 'Comment'] }
+
+    let $FZF_DEFAULT_OPTS = '--info=inline'
+
+    " Hides anything from gitignore
+    let $FZF_DEFAULT_COMMAND="rg --files --hidden"
+
+    "Get Files
+    command! -bang -nargs=? -complete=dir Files
+          \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'options': ['--info=inline']}), <bang>0)
+
+
+    " Get text in files with Rg
     command! -bang -nargs=* Rg
           \ call fzf#vim#grep(
           \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
-          \   <bang>0 ? fzf#vim#with_preview('up:60%')
-          \           : fzf#vim#with_preview('right:50%:hidden', '?'),
-          \   <bang>0)
+          \   fzf#vim#with_preview(), <bang>0)
 
-    " Likewise, Files command with preview window
-    command! -bang -nargs=? -complete=dir Files
-          \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('up:45%'), <bang>0)
+    " Ripgrep advanced
+    function! RipgrepFzf(query, fullscreen)
+      let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case %s || true'
+      let initial_command = printf(command_fmt, shellescape(a:query))
+      let reload_command = printf(command_fmt, '{q}')
+      let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+      call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+    endfunction
+
+    command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+    " Git grep
+    command! -bang -nargs=* GGrep
+          \ call fzf#vim#grep(
+          \   'git grep --line-number '.shellescape(<q-args>), 0,
+          \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
 
 
-    " Likewise, GFiles command with preview window
-    command! -bang -nargs=? -complete=dir GFiles
-          \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('up:45%'), <bang>0)
-
-    nmap <Leader>/ :Ag!<Space>
-    " nmap <Leader>/ :Rg!<Space>
-    nmap <Leader>/ :Rg!<CR>
+    nmap <Leader>/ :Rg<CR>
+    nmap <Leader>gg :Ag!<Space>
     nmap <Leader>C :Commands<CR>
     nmap <Leader>: :History:<CR>
     nmap <Leader>M :Maps<CR>
@@ -462,38 +580,40 @@ call plug#begin('~/.config/nvim/plugged')
   "   map <Leader><C-m> :CtrlPBranch<CR>
   "   "all modified - last two combined
   "   map <Leader><C-a> :CtrlPBranchModified<CR>
-  Plug 'c-brenn/phoenix.vim'
-    " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
-    " Borrowed from @skwp
-    if executable('ag')
-      " Use ag over grep
-      set grepprg=ag\ --nogroup\ --nocolor
-      " Use ag over Ack
-      let g:ackprg = 'ag --nogroup --nocolor --column'
-
-      " PREVIOUS: it was a bit slow but worked
-      " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-      " let g:ctrlp_user_command =
-      "       \ 'ag %s --files-with-matches -g "" --ignore "\.git$\|\.hg$\|\.svn$"'
-
-      let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-
-      " ag is fast enough that CtrlP doesn't need to cache
-      let g:ctrlp_use_caching = 0
-    else
-      " Fall back to using git ls-files if Ag is not available
-      let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$'
-      let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
-    endif
-    let g:ctrlp_map = '<c-p>'
-
-    let g:ctrlp_by_filename = 0
-    let g:ctrlp_cmd = 'CtrlP'
-    let g:ctrlp_working_path_mode = 'ra'
-    let g:ctrlp_switch_buffer = 'e'
-
-    noremap <C-b> :CtrlPBuffer<CR>
-    let g:ctrlp_dont_split = 'NERD_tree_2'
+  "
+  " WHEN ELIXIR: enable when using elixir
+  " Plug 'c-brenn/phoenix.vim'
+  "   " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+  "   " Borrowed from @skwp
+  "   if executable('ag')
+  "     " Use ag over grep
+  "     set grepprg=ag\ --nogroup\ --nocolor
+  "     " Use ag over Ack
+  "     let g:ackprg = 'ag --nogroup --nocolor --column'
+  "
+  "     " PREVIOUS: it was a bit slow but worked
+  "     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  "     " let g:ctrlp_user_command =
+  "     "       \ 'ag %s --files-with-matches -g "" --ignore "\.git$\|\.hg$\|\.svn$"'
+  "
+  "     let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+  "
+  "     " ag is fast enough that CtrlP doesn't need to cache
+  "     let g:ctrlp_use_caching = 0
+  "   else
+  "     " Fall back to using git ls-files if Ag is not available
+  "     let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$'
+  "     let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
+  "   endif
+  "   let g:ctrlp_map = '<c-p>'
+  "
+  "   let g:ctrlp_by_filename = 0
+  "   let g:ctrlp_cmd = 'CtrlP'
+  "   let g:ctrlp_working_path_mode = 'ra'
+  "   let g:ctrlp_switch_buffer = 'e'
+  "
+  "   noremap <C-b> :CtrlPBuffer<CR>
+  "   let g:ctrlp_dont_split = 'NERD_tree_2'
   " Plug 'edkolev/tmuxline.vim'
   "   let g:tmuxline_preset = 'tmux'
   "   let g:tmuxline_preset = {
@@ -508,15 +628,25 @@ call plug#begin('~/.config/nvim/plugged')
   "         \ 'right' : '',
   "         \ 'right_alt' : '<',
   "         \ 'space' : ' '}
-  Plug 'elixir-editors/vim-elixir'
+  " WHEN ELIXIR: enable when using elixir
+  " Plug 'elixir-editors/vim-elixir'
+
   Plug 'henrik/vim-indexed-search'
   Plug 'jiangmiao/auto-pairs'
   Plug 'jreybert/vimagit'
     let g:magit_default_fold_level = 0
-  Plug 'jparise/vim-graphql'
+
+  " WHEN GRAPHQL: enable when using graphql
+  " Plug 'jparise/vim-graphql'
+
   Plug 'junegunn/vim-easy-align'
     nmap <Leader>a <Plug>(EasyAlign)
     vmap <Leader>a <Plug>(EasyAlign)
+  " RUN: brew install ctags
+  " Run the following in company code repo
+  " RUN: ctags -R -f ./.git/tags .
+  " INFO: https://andrew.stwrt.ca/posts/vim-ctags/
+  " CREATE: ~/.ctags
   Plug 'ludovicchabant/vim-gutentags' "Easily manage tag files
   " gutentags
     let g:gutentags_cache_dir = '~/.tags_cache'
@@ -529,6 +659,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'rizzatti/dash.vim'
   Plug 'mileszs/ack.vim'
     cnoreabbrev ag Gcd <bar> Ack!
+    cnoreabbrev g Ag!
     nnoremap <Leader>k :Gcd <Bar> Ack! <cword><CR>
     nnoremap <Leader>w :Ack <cword><cr>
   Plug 'NLKNguyen/papercolor-theme'
@@ -561,48 +692,52 @@ call plug#begin('~/.config/nvim/plugged')
     let g:neomake_markdown_enabled_makers = []
 
     " Configure a nice credo setup, courtesy https://github.com/neomake/neomake/pull/300
-    let g:neomake_elixir_enabled_makers = ['mycredo']
-    function! NeomakeCredoErrorType(entry)
-      if a:entry.type ==# 'F'      " Refactoring opportunities
-        let l:type = 'W'
-      elseif a:entry.type ==# 'D'  " Software design suggestions
-        let l:type = 'I'
-      elseif a:entry.type ==# 'W'  " Warnings
-        let l:type = 'W'
-      elseif a:entry.type ==# 'R'  " Readability suggestions
-        let l:type = 'I'
-      elseif a:entry.type ==# 'C'  " Convention violation
-        let l:type = 'W'
-      else
-        let l:type = 'M'           " Everything else is a message
-      endif
-      let a:entry.type = l:type
-    endfunction
+    " WHEN ELIXIR: enable when using elixir
+    " let g:neomake_elixir_enabled_makers = ['mycredo']
+    " function! NeomakeCredoErrorType(entry)
+    "   if a:entry.type ==# 'F'      " Refactoring opportunities
+    "     let l:type = 'W'
+    "   elseif a:entry.type ==# 'D'  " Software design suggestions
+    "     let l:type = 'I'
+    "   elseif a:entry.type ==# 'W'  " Warnings
+    "     let l:type = 'W'
+    "   elseif a:entry.type ==# 'R'  " Readability suggestions
+    "     let l:type = 'I'
+    "   elseif a:entry.type ==# 'C'  " Convention violation
+    "     let l:type = 'W'
+    "   else
+    "     let l:type = 'M'           " Everything else is a message
+    "   endif
+    "   let a:entry.type = l:type
+    " endfunction
+    "
+    " let g:neomake_error_sign = {
+    "       \ 'text': s:error_sign,
+    "       \ 'texthl': s:error_sign_hl,
+    "       \ }
+    " let g:neomake_warning_sign = {
+    "       \ 'text': s:warning_sign,
+    "       \ 'texthl': s:warning_sign_hl,
+    "       \ }
+    " let g:neomake_info_sign = {
+    "       \ 'text': s:info_sign,
+    "       \ 'texthl': s:info_sign_hl,
+    "       \ }
+    " let g:neomake_message_sign = {
+    "       \ 'text': s:hint_sign,
+    "       \ 'texthl': s:hint_sign_hl,
+    "       \ }
+    "
+    " let g:neomake_elixir_mycredo_maker = {
+    "       \ 'exe': 'mix',
+    "       \ 'args': ['credo', 'list', '%:p', '--format=oneline'],
+    "       \ 'errorformat': '[%t] %. %f:%l:%c %m,[%t] %. %f:%l %m',
+    "       \ 'postprocess': function('NeomakeCredoErrorType')
+    "       \ }
 
-    let g:neomake_error_sign = {
-          \ 'text': s:error_sign,
-          \ 'texthl': s:error_sign_hl,
-          \ }
-    let g:neomake_warning_sign = {
-          \ 'text': s:warning_sign,
-          \ 'texthl': s:warning_sign_hl,
-          \ }
-    let g:neomake_info_sign = {
-          \ 'text': s:info_sign,
-          \ 'texthl': s:info_sign_hl,
-          \ }
-    let g:neomake_message_sign = {
-          \ 'text': s:hint_sign,
-          \ 'texthl': s:hint_sign_hl,
-          \ }
+  " WHEN ELIXIR: enable when using elixir
+  " Plug 'mhinz/vim-mix-format'
 
-    let g:neomake_elixir_mycredo_maker = {
-          \ 'exe': 'mix',
-          \ 'args': ['credo', 'list', '%:p', '--format=oneline'],
-          \ 'errorformat': '[%t] %. %f:%l:%c %m,[%t] %. %f:%l %m',
-          \ 'postprocess': function('NeomakeCredoErrorType')
-          \ }
-  Plug 'mhinz/vim-mix-format'
   Plug 'rhysd/git-messenger.vim'
     let g:git_messenger_close_on_cursor_moved = v:false
     " let g:git_messenger_no_default_mappings = v:false
@@ -630,16 +765,20 @@ call plug#begin('~/.config/nvim/plugged')
     "change nerd tree width
     let NERDTreeWinSize=40
   Plug 'sheerun/vim-polyglot'
-  Plug 'slashmili/alchemist.vim'
-    let g:alchemist#elixir_erlang_src = "/usr/local/share/src"
-    let g:alchemist_tag_map = '<C-]>'
-    let g:alchemist_tag_stack_map = '<C-T>'
-    let g:alchemist_iex_term_split = 'split'
-    let g:alchemist_iex_term_size = 15
-    autocmd FileType elixir nnoremap <buffer> <leader>h :call alchemist#exdoc()<CR>
+
+  " WHEN ELIXIR: enable when using elixir - Elixir Sense
+  " Plug 'slashmili/alchemist.vim'
+  "   let g:alchemist#elixir_erlang_src = "/usr/local/share/src"
+  "   let g:alchemist_tag_map = '<C-]>'
+  "   let g:alchemist_tag_stack_map = '<C-T>'
+  "   let g:alchemist_iex_term_split = 'split'
+  "   let g:alchemist_iex_term_size = 15
+  "   autocmd FileType elixir nnoremap <buffer> <leader>h :call alchemist#exdoc()<CR>
+
   Plug 'tomasr/molokai'
   Plug 'tomtom/tcomment_vim'
   Plug 'tpope/vim-endwise'
+  " Gbrowse enabled
   Plug 'tpope/vim-rhubarb'
   Plug 'tpope/vim-fugitive'
     "---------------vim fugitive(git) plugin---------------------
@@ -660,7 +799,8 @@ call plug#begin('~/.config/nvim/plugged')
     "nnoremap <Leader>gm :Gmove<Space>
     nnoremap <Leader>go :Git checkout<Space>
   Plug 'tpope/vim-bundler'
-  Plug 'tpope/vim-projectionist'
+  " WHEN ELIXIR: enable when using elixir
+  " Plug 'tpope/vim-projectionist'
   Plug 'tpope/vim-rails'
   Plug 'tpope/vim-rake'
   Plug 'tpope/vim-repeat'
@@ -694,15 +834,19 @@ call plug#begin('~/.config/nvim/plugged')
       " endif
     augroup END
 
-
-    let g:ale_fix_on_save = 1
+    " Turn on manually
+    let g:ale_fix_on_save = 0
     let g:ale_javascript_prettier_use_local_config = 1
     let g:ale_linters = {
           \ 'elixir': ['dialyxir', 'elixir_ls'],
-          \ 'javascript': ['eslint']
+          \ 'javascript': ['eslint'],
+          \ 'coffee': ['coffeelint'],
+          \ 'haml': ['hamllint'],
+          \ 'ruby': ['rubocop', 'rails_best_practices']
           \ }
     let g:ale_fixers = {
     \ 'javascript': ['prettier', 'eslint'],
+    \ 'haml': ['rubocop'],
     \ 'json': ['prettier'],
     \ 'elixir': ['mix_format'],
     \ 'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop']
@@ -718,18 +862,22 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'mxw/vim-jsx'
     let g:jsx_ext_required = 0
   Plug 'maxmellon/vim-jsx-pretty',   { 'for': ['javascript', 'javascript.jsx','typescript', 'typescript.tsx'] }
-  Plug 'mattn/emmet-vim'
-    " let g:user_emmet_leader_key='<Tab>'
-    let g:user_emmet_leader_key=','
-    let g:user_emmet_settings = {
-          \  'javascript.jsx' : {
-          \      'extends': 'jsx',
-          \      'quote_char': '"',
-          \  },
-          \}
+
+  " WHEN REACT: enable when using jsx with react
+  " Plug 'mattn/emmet-vim'
+  "   " let g:user_emmet_leader_key='<Tab>'
+  "   let g:user_emmet_leader_key=','
+  "   let g:user_emmet_settings = {
+  "         \  'javascript.jsx' : {
+  "         \      'extends': 'jsx',
+  "         \      'quote_char': '"',
+  "         \  },
+  "         \}
   Plug 'skywind3000/asyncrun.vim'
     autocmd BufWritePost *.js AsyncRun -post=checktime ./node_modules/.bin/eslint --fix %
-  Plug 'noprompt/vim-yardoc'
+
+  " WHEN YARD: enable when using yard comments
+  " Plug 'noprompt/vim-yardoc'
 call plug#end()
 
 set background=dark
@@ -740,7 +888,7 @@ colorscheme molokai
 set t_Co=256 " MOAR colors
 
 "open my notes
-nnoremap <leader>ep :vsp $HOME/notes_fund_america.txt <CR>
+nnoremap <leader>ep :vsp $HOME/wantable/wantable-2.md <CR>
 
 " Neovim
 " type ,ev to edit the Vimrc

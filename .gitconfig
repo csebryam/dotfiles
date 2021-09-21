@@ -1,6 +1,6 @@
   [user]
       name = Bryam
-      email = noguerabryam@gmail.com
+      email = bryamnoguera@yahoo.com
       username = csebryam
   [filter "media"]
       clean = git-media-clean %f

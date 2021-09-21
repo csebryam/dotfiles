@@ -784,9 +784,9 @@ call plug#begin('~/.config/nvim/plugged')
     "---------------vim fugitive(git) plugin---------------------
     set nocompatible " use Vim instead of Vi and required for plugin
     autocmd QuickFixCmdPost *grep* cwindow
-    nnoremap <Leader>gb :Gblame<cr>
+    nnoremap <Leader>gb :Git blame<cr>
     nnoremap <Leader>ga :Git add %:p<CR><CR>
-    nnoremap <Leader>gs :Gstatus<CR>
+    nnoremap <Leader>gs :Git<CR>
     nnoremap <Leader>gc :Gcommit -v -q<CR>
     nnoremap <Leader>gt :Gcommit -v -q %:p<CR>
     nnoremap <Leader>gd :Gdiff<CR>

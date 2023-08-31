@@ -2,6 +2,7 @@
 " Make sure all providers are correctly set up
 " $ checkhealth provider
 "
+""""""""""""""""""""""""""""
 " Make sure neovim gem is installed
 " $ gem install neovim
 "
@@ -19,8 +20,19 @@
 " $ pip2 install pynvim
 " $ pip3 install pynvim
 " "
+""""""""""""""""""""""""""""
 " When Solar graph is installed, also install this
 " $ pip3 install solargraph-utils.py --user
+"
+""""""""""""""""""""""""""""
+" To install Nodejs and NPM
+" $ asdf install nodejs 16.15.1
+" $ asdf global nodejs 16.15.1
+"
+" $ npm i -g asdf
+" $ npm install -g npm@8.18.0
+"
+""""""""""""""""""""""""""""
 
 "set showmode "display current mode
 "set showcmd "display current mode
@@ -43,6 +55,24 @@ set incsearch " Makes search act like search in other modern browsers
 set ignorecase " Ignore case when searching
 set list
 set listchars=tab:›\ ,trail:.
+
+
+  " Print generating ctags message function
+  function! s:get_gutentags_status(mods) abort
+    let l:msg = ''
+    if index(a:mods, 'ctags') >= 0
+      let l:msg .= '♨'
+    endif
+    if index(a:mods, 'cscope') >= 0
+      let l:msg .= '♺'
+    endif
+    return l:msg
+  endfunction
+
+  " set statusline based on ctags function from man page
+  set statusline+=%{gutentags#statusline_cb(
+        \function('<SID>get_gutentags_status'))}
+
 
 
 " Statusline format
@@ -102,9 +132,22 @@ set sidescroll =1
 set ttyfast
 " Increase scrolling speed; speed very laggy without command.
 set lazyredraw
+set redrawtime=5000
+" pattern uses more memory than 'maxmempattern'
+set mmp=5000
+
+" Set regex engine - for redrawing purposes
+" The possible values are:
+" 0       automatic selection
+" 1       old engine
+" 2       NFA engine
+set re=2
 
 " Get the title from the iterm tab
 set title
+
+" Give more space for displaying messages.
+set cmdheight=1
 
 "select all occurences of a word using a mouse
 nnoremap <silent> <2-LeftMouse> :let @/='\V\<'.escape(expand('<cword>'), '\').'\>'<cr>:set hls<cr>
@@ -116,6 +159,13 @@ set mouse=a
 
 "This unsets the last search pattern registered -- unselects search
 map <Leader><Space> :noh<CR>
+" Center search in the middle of the screen
+:nnoremap n nzz
+:nnoremap N Nzz
+:nnoremap * *zz
+:nnoremap # #zz
+:nnoremap g* g*zz
+:nnoremap g# g#zz
 
 " For regular expressions turn magic on
 set magic
@@ -266,14 +316,21 @@ set wildignore+=*.gem
 set wildignore+=log/**
 set wildignore+=*.zip,*.tar.gz,*.tar.bz2,*.rar,*.tar.xz " Disable archive files
 
-function! <SID>StripTrailingWhitespaces()
-  " save last search & cursor position
-  let _s=@/
-  let l = line(".")
-  let c = col(".")
-  %s/\s\+$//e
-  let @/=_s
-  call cursor(l, c)
+" cursor Position was screwy here too
+" function! <SID>StripTrailingWhitespaces()
+"   " save last search & cursor position
+"   let _s=@/
+"   let l = line(".")
+"   let c = col(".")
+"   %s/\s\+$//e
+"   let @/=_s
+"   call cursor(l, c)
+" endfunction
+
+function! StripTrailingWhite()
+  let l:winview = winsaveview()
+  silent! %s/\s\+$//e
+  call winrestview(l:winview)
 endfunction
 
 augroup configgroup
@@ -286,7 +343,8 @@ augroup configgroup
   autocmd BufRead,BufNewFile {Berksfile,*.common,Gemfile,Vagrantfile,Procfile,config.ru,*.god,*.arb} set ft=ruby
   " autocmd BufRead,BufNewFile *.common set syntax=ruby
 
-  autocmd BufWritePre *.php,*.py,*.js,*.txt,*,hs,*.java,*.md :call <SID>StripTrailingWhitespaces()
+  " autocmd BufWritePre *.php,*.py,*.js,*.txt,*,hs,*.java,*.md :call <SID>StripTrailingWhitespaces()
+  autocmd BufWritePre *.php,*.py,*.js,*.txt,*,hs,*.java,*.md :call StripTrailingWhite()
 
   " Not using this one because sometimes it sets cursor elsewhere
   " delete trailing white space
@@ -325,6 +383,14 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.config/nvim/plugged')
+
+   " Subscription to github
+   Plug 'github/copilot.vim'
+  " Manual Installs
+  " - https://github.com/github/copilot.vim
+  " RUN: :Copilot setup
+  " OR
+  " RUN: :Copilot
 
   " mappings for YARD documentation
   Plug 'kkoomen/vim-doge'
@@ -533,7 +599,6 @@ call plug#begin('~/.config/nvim/plugged')
     command! -bang -nargs=? -complete=dir Files
           \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'options': ['--info=inline']}), <bang>0)
 
-
     " Get text in files with Rg
     command! -bang -nargs=* Rg
           \ call fzf#vim#grep(
@@ -571,6 +636,7 @@ call plug#begin('~/.config/nvim/plugged')
     nmap <Leader>b :Buffers<CR>
     nmap <Leader>h :History<CR>
     nmap <Leader>f :GFiles<CR>
+    nmap <Leader>,f :GFiles?<CR>
     nmap <Leader>F :Files!<CR>
   " Plug 'ctrlpvim/ctrlp.vim'
   " Plug 'jasoncodes/ctrlp-modified.vim'
@@ -583,37 +649,7 @@ call plug#begin('~/.config/nvim/plugged')
   "
   " WHEN ELIXIR: enable when using elixir
   " Plug 'c-brenn/phoenix.vim'
-  "   " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
-  "   " Borrowed from @skwp
-  "   if executable('ag')
-  "     " Use ag over grep
-  "     set grepprg=ag\ --nogroup\ --nocolor
-  "     " Use ag over Ack
-  "     let g:ackprg = 'ag --nogroup --nocolor --column'
   "
-  "     " PREVIOUS: it was a bit slow but worked
-  "     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  "     " let g:ctrlp_user_command =
-  "     "       \ 'ag %s --files-with-matches -g "" --ignore "\.git$\|\.hg$\|\.svn$"'
-  "
-  "     let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-  "
-  "     " ag is fast enough that CtrlP doesn't need to cache
-  "     let g:ctrlp_use_caching = 0
-  "   else
-  "     " Fall back to using git ls-files if Ag is not available
-  "     let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$'
-  "     let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
-  "   endif
-  "   let g:ctrlp_map = '<c-p>'
-  "
-  "   let g:ctrlp_by_filename = 0
-  "   let g:ctrlp_cmd = 'CtrlP'
-  "   let g:ctrlp_working_path_mode = 'ra'
-  "   let g:ctrlp_switch_buffer = 'e'
-  "
-  "   noremap <C-b> :CtrlPBuffer<CR>
-  "   let g:ctrlp_dont_split = 'NERD_tree_2'
   " Plug 'edkolev/tmuxline.vim'
   "   let g:tmuxline_preset = 'tmux'
   "   let g:tmuxline_preset = {
@@ -639,9 +675,11 @@ call plug#begin('~/.config/nvim/plugged')
   " WHEN GRAPHQL: enable when using graphql
   " Plug 'jparise/vim-graphql'
 
-  Plug 'junegunn/vim-easy-align'
-    nmap <Leader>a <Plug>(EasyAlign)
-    vmap <Leader>a <Plug>(EasyAlign)
+  " Rubocop aligns for me
+  " Plug 'junegunn/vim-easy-align'
+  "   nmap <Leader>a <Plug>(EasyAlign)
+  "   vmap <Leader>a <Plug>(EasyAlign)
+
   " RUN: brew install ctags
   " Run the following in company code repo
   " RUN: ctags -R -f ./.git/tags .
@@ -658,6 +696,14 @@ call plug#begin('~/.config/nvim/plugged')
 
   Plug 'rizzatti/dash.vim'
   Plug 'mileszs/ack.vim'
+    " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+    " Borrowed from @skwp
+    if executable('ag')
+      " set grepprg=ag\ --nogroup\ --nocolor
+      " let g:ackprg = 'ag --nogroup --nocolor --column'
+      let g:ackprg = 'ag --vimgrep'
+    endif
+
     cnoreabbrev ag Gcd <bar> Ack!
     cnoreabbrev g Ag!
     nnoremap <Leader>k :Gcd <Bar> Ack! <cword><CR>
@@ -794,7 +840,7 @@ call plug#begin('~/.config/nvim/plugged')
     nnoremap <Leader>gr :Gread<CR>
     nnoremap <Leader>gw :Gwrite<CR><CR>
     " nnoremap <Leader>gl :silent! Glog<CR>:bot copen<CR>
-    nnoremap <Leader>gl :0Glog<CR>
+    nnoremap <Leader>gl :0Gclog<CR>
     nnoremap <Leader>gp :Ggrep<Space>
     "nnoremap <Leader>gm :Gmove<Space>
     nnoremap <Leader>go :Git checkout<Space>
@@ -835,7 +881,7 @@ call plug#begin('~/.config/nvim/plugged')
     augroup END
 
     " Turn on manually
-    let g:ale_fix_on_save = 0
+    let g:ale_fix_on_save = 1
     let g:ale_javascript_prettier_use_local_config = 1
     let g:ale_linters = {
           \ 'elixir': ['dialyxir', 'elixir_ls'],
@@ -887,8 +933,16 @@ echo v:scrollstart
 colorscheme molokai
 set t_Co=256 " MOAR colors
 
+" Change search highlight color
+" Needs to be set under the colorscheme
+hi Search ctermbg=darkgray
+hi Search ctermfg=yellow
+" change visual select color
+hi Visual cterm=none ctermbg=darkgrey ctermfg=cyan
+
+
 "open my notes
-nnoremap <leader>ep :vsp $HOME/wantable/wantable-2.md <CR>
+nnoremap <leader>ep :vsp $HOME/threeflow/scratch.md <CR>
 
 " Neovim
 " type ,ev to edit the Vimrc

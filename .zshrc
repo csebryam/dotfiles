@@ -102,11 +102,11 @@ ZSH_THEME_GIT_PROMPT_CLEAN=""
 # export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='vim'
+else
+  export EDITOR='nvim'
+fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -120,6 +120,13 @@ ZSH_THEME_GIT_PROMPT_CLEAN=""
 # alias zshconfig="vim ~/.zshrc"
 alias ohmyzsh="vim ~/.oh-my-zsh"
 
+# AWS CONFIG
+awsservercli () {
+  aws ec2 describe-instances \
+    --filters Name=instance-state-name,Values=running Name=tag-value,Values="*?" \
+    --query "Reservations[*].Instances[*].{PrivateIP:PrivateIpAddress, Server:Tags[?Key=='Name']|[0].Value}" \
+    --output table
+}
 
 # Dotfiles
 # https://www.atlassian.com/git/tutorials/dotfiles
@@ -133,6 +140,25 @@ alias repry='fc -s mix\ test=iex\ -S\ mix\ test\ --trace mix\ test'
 
 # Elixir - IEX: Enable History
 export ERL_AFLAGS="-kernel shell_history enabled"
+
+# Rails
+alias rs='rails server'
+alias rc='rails console'
+alias rdbm='rails db:migrate'
+alias rdbr='rails db:rollback'
+alias rdbre='rails db:migrate:redo'
+
+# -------------------------------------------------------------------
+# THREEFLOW Configs
+# -------------------------------------------------------------------
+# GitHub Personal Access Token for GitHub packages
+export NPM_TOKEN=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
+export FONTAWESOME_NPM_AUTH_TOKEN=2412F0D5-A919-4DEE-8681-BA0839AC1D86
+
+
+alias quick_db_dump="rm -R /tmp/quick_db_dump && time pg_dump -v -j 10 -Fd -f /tmp/quick_db_dump watchtower_development"
+
+alias quick_db_restore="time pg_restore -v -j 10 --disable-triggers --format=d -C --dbname=watchtower_development /tmp/quick_db_dump"
 
 #
 # -------------------------------------------------------------------
@@ -188,7 +214,18 @@ function myip() {
 # source $HOME/.zshenv
 # source $HOME/.zprofile
 
+# Allow [ or ] (brackets) whereever you want
+unsetopt nomatch
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # ASDF exec
 . /usr/local/opt/asdf/libexec/asdf.sh
+
+# OP - onepassword - 1password completion
+eval "$(op completion zsh)"; compdef _op op
+
+# This is used for AWS CLI autocompletion
+autoload bashcompinit && bashcompinit
+autoload -Uz compinit && compinit
+

@@ -1,30 +1,4 @@
 # frozen_string_literal: true
-# frozen_string_literal: true
-
-# Repo: https:github.com/CaptDowner/.pryrc
-# Pry custom commands defined in my .pryrc:
-# cat(f)           Display text file contents.
-# chk             List current startup info for services.
-# dt             Show the system date and time.
-# fl(fn)           Load and execute a Ruby source file.
-# gl2(str)         List gems matching search parameter.
-# glist             List all installed gems.
-# lc             Display only filenames in multiple column format.
-# lf             List only filenames, one per line, in alpha order.
-# loc             Display which computer is in use.
-# lpci             List all pci devices.
-# lsa             List all files in filename order.
-# lsd             List only directories.
-# lss             List all files by size from smallest to largest.
-# lusb             List all usb devices.
-# path             Display current PATH.
-# pm             Show methods defined in .pryrc.
-# pss             Display process list.
-# pwd             Print (current) working directory.
-# rl              Reload and excute the most recently loaded ruby source file.
-# rqa(f)           Search for installed RPM.
-# sip             Show location, current ip(s) and network addresses.
-# time(&b)         Display execution timing.
 
 require 'pry'
 
@@ -57,22 +31,22 @@ end
 
 # Shortcuts for debugging commands
 begin
-  Pry.commands.alias_command 'c', 'continue'
+  Pry.commands.alias_command 'cc', 'continue'
 rescue StandardError
   nil
 end
 begin
-  Pry.commands.alias_command 's', 'step'
+  Pry.commands.alias_command 'ss', 'step'
 rescue StandardError
   nil
 end
 begin
-  Pry.commands.alias_command 'n', 'next'
+  Pry.commands.alias_command 'nn', 'next'
 rescue StandardError
   nil
 end
 begin
-  Pry.commands.alias_command 'f', 'finish'
+  Pry.commands.alias_command 'ff', 'finish'
 rescue StandardError
   nil
 end
@@ -82,43 +56,86 @@ rescue StandardError
   nil
 end
 begin
-  Pry.commands.alias_command 'ss', 'show-source'
+  Pry.commands.alias_command 'sh', 'show-source'
 rescue StandardError
   nil
 end
 
 # Hit Enter to repeat last command
-Pry::Commands.command /^$/, 'repeat last command' do
-  _pry_.run_command Pry.history.to_a.last
+Pry::Commands.command(/^$/, 'repeat last command') do
+  # _pry_.run_command Pry.history.to_a.last
+  pry_instance.run_command Pry.history.to_a.last
 end
 
 # ===================
 # Custom Pry aliases
 # ===================
-# Where am I?
-Pry.config.commands.alias_command 'w', 'whereami'
+Pry.config.commands.alias_command 'ww', 'whereami'
 # Clear Screen
 Pry.config.commands.alias_command '.cls', '.clear'
 
+# ===================
+# Removes ^A^B from console output
+ENV['PAGER'] = ' less --raw-control-chars -F -X'
+
 # Return only the methods not present on basic objects
-# class Object
-#   def ims
-#   (self.methods - Object.instance_methods).sort
-#   end
-#
-#   def bryam
-#     @_bryam ||= User.with_email("bryam@fundamerica.com")
-#   end
-#
-#   def clear_jobs
-#   Sidekiq::ScheduledSet.new.clear
-#     Sidekiq::RetrySet.new.clear
-#   end
-#
-#   def clear_all_workers
-#    Sidekiq.redis { |conn| conn.flushdb }
-#   end
-# end
+class Object
+  def bryam_pry_methods
+    [
+      'bryam',
+      'user_email(email)',
+      'utc_to_zone(utc_time)',
+      'caller_match(word = nil)',
+      'clear_jobs',
+      'clear_all_workers',
+      'pbcopy',
+      'remove_escapes'
+    ]
+  end
+
+  def user_email(email = nil)
+    User.find_by(email:)
+  end
+
+  def utc_to_zone(utc_time, zone = :pacific)
+    time_zone =
+      if zone == :central
+        'Central Time (US & Canada)'
+      else
+        'Pacific Time (US & Canada)'
+      end
+
+    date_time = DateTime.parse(utc_time)
+    time = Time.zone.parse(date_time.to_s)
+    time.in_time_zone(time_zone)
+  end
+
+  def bryam
+    @bryam ||= User.find_by(email: 'bryamnoguera@threeflow.com')
+  end
+
+  def caller_match(word = 'threeflow')
+    caller.select { |line| line.match?(/#{word}/) }
+  end
+
+  def clear_jobs
+    Sidekiq::ScheduledSet.new.clear
+    Sidekiq::RetrySet.new.clear
+    Sidekiq.redis {|c| c.del('stat:failed') } # reset failed counters
+  end
+
+  def clear_all_workers
+    Sidekiq.redis { |conn| conn.flushdb } # rubocop:disable Style/SymbolProc
+  end
+
+  def pbcopy(obj)
+    IO.popen('pbcopy', 'w') { |pipe| pipe.puts obj }
+  end
+
+  def remove_escapes(str)
+    str.delete('"')
+  end
+end
 
 # Load and execute a Ruby source file
 # def run_ruby_file(fn)

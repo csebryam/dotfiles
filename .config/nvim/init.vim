@@ -1,6 +1,7 @@
 " INSTALL INSTRUCTIONS "
 " Make sure all providers are correctly set up
-" $ checkhealth provider
+"   Open vim window
+"   :checkhealth provider
 "
 """"""""""""""""""""""""""""
 " Make sure neovim gem is installed
@@ -16,6 +17,10 @@
 " Make sure python neovim is installed
 " $ pip3 install --user neovim
 "
+" Install python 3
+" $ python3 -m pip install --user --upgrade pynvim
+"
+" NOTE: this may not be needed anymore
 " Make sure pynvim is installed
 " $ pip2 install pynvim
 " $ pip3 install pynvim

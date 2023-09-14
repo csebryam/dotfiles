@@ -430,25 +430,6 @@ call plug#begin('~/.config/nvim/plugged')
     " Set let g:easycomplete_lsp_checking = 0 to disable lsp checking for installation.
     " Set let g:easycomplete_signature_enable = 0 to disable lsp signature checking.
 
-  "
-  " NOTE: disabled deoplete for now
-  " - code completion tool
-  " - replacement: vim-easycomplete
-  "
-  " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  "   let g:deoplete#enable_at_startup = 1
-  "   let g:deoplete#enable_fuzzy_completion = 1
-  "
-  "
-  "   " let g:deoplete#custom#option({
-  "   "       \ 'auto_complete_delay': 200,
-  "   "       \ 'smart_case': v:true,
-  "   "       \ 'ignore_case': v:true,
-  "   "       \ })
-  "
-  "   " use tab for completion
-  "   inoremap <expr><tab> pumvisible() ? "\<C-N>" : "\<TAB>"
-
   Plug 'airblade/vim-gitgutter'
     highlight clear SignColumn
     highlight GitGutterAdd ctermfg=green guifg=darkgreen

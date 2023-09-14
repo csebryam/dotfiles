@@ -78,8 +78,6 @@ set listchars=tab:›\ ,trail:.
   set statusline+=%{gutentags#statusline_cb(
         \function('<SID>get_gutentags_status'))}
 
-
-
 " Statusline format
 " set statusline=
 "" set statusline+=%#title#\ %{GitBranch()}\  " branch name
@@ -408,75 +406,49 @@ call plug#begin('~/.config/nvim/plugged')
   " Install solargraph
   " RUN: $ gem install solargraph
   " Install Plugin
-  " RUN: vim +PlugInstall +UpdateRemotePlugins +qa
-  " Start solargraph server
-  " RUN: solargraph socket
-  " set runtime path
-  " RUN: set runtimepath+=~/.config/nvim/plugged/LanguageClient-neovim
-  " Make sure it was added to runtimepath
-  " RUN: :echo &runtimepath
-  " RUN: Restart all of the terminals - quit all
   "
-  " This starts the server for Solargraph
-  Plug 'autozimu/LanguageClient-neovim', {
-        \ 'branch': 'next',
-        \ 'do': 'bash install.sh',
-        \ }
-    " Tell the language client to use the default IP and port
-    " that Solargraph runs on
+  " A Fast & Minimalism Style Code Completion Plugin for vim/nvim.
+  Plug 'jayli/vim-easycomplete'
+  " Might want to disable this - Used for snippets
+  Plug 'SirVer/ultisnips'
+    noremap gr :EasyCompleteReference<CR>
+    noremap gd :EasyCompleteGotoDefinition<CR>
+    noremap rn :EasyCompleteRename<CR>
+    noremap gb :BackToOriginalBuffer<CR>
 
-    let g:LanguageClient_serverCommands = {
-          \ 'ruby': ['tcp://localhost:7658']
+    let g:easycomplete_scheme="rider"
+    let g:easycomplete_nerd_font = 1
+    let g:easycomplete_sign_text = {
+          \   'error':       "◉",
+          \   'warning':     "▲",
+          \   'information': '◎',
+          \   'hint':        '▧'
           \ }
 
-    " CHANGE: Change rbenv location
-    " let g:LanguageClient_serverCommands = {
-    "   \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
-    "   \ 'javascript': ['/usr/local/bin/javascript-typescript-stdio'],
-    "   \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
-    "   \ 'python': ['/usr/local/bin/pyls'],
-    "   \ 'ruby': ['~/.rbenv/versions/2.6.6/bin/solargraph', 'stdio'],
-    "   \ }
-    let g:LanguageClient_serverCommands = {
-      \ 'ruby': ['~/.asdf/shims/solargraph', 'stdio'],
-      \ }
+    " NOTES:
+    " Set let g:easycomplete_diagnostics_enable = 0 to disable lsp diagnostics.
+    " Set let g:easycomplete_lsp_checking = 0 to disable lsp checking for installation.
+    " Set let g:easycomplete_signature_enable = 0 to disable lsp signature checking.
 
-    " Don't send a stop signal to the server when exiting vim.
-    " This is optional, but I don't like having to restart Solargraph
-    " every time I restart vim.
-    let g:LanguageClient_autoStop = 0
+  "
+  " NOTE: disabled deoplete for now
+  " - code completion tool
+  " - replacement: vim-easycomplete
+  "
+  " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  "   let g:deoplete#enable_at_startup = 1
+  "   let g:deoplete#enable_fuzzy_completion = 1
+  "
+  "
+  "   " let g:deoplete#custom#option({
+  "   "       \ 'auto_complete_delay': 200,
+  "   "       \ 'smart_case': v:true,
+  "   "       \ 'ignore_case': v:true,
+  "   "       \ })
+  "
+  "   " use tab for completion
+  "   inoremap <expr><tab> pumvisible() ? "\<C-N>" : "\<TAB>"
 
-    " Configure ruby omni-completion to use the language client:
-    autocmd FileType ruby setlocal omnifunc=LanguageClient#complete
-
-    nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-    nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-
-  " Depricated
-  " Plug 'uplus/deoplete-solargraph', { 'do': ':UpdateRemotePlugins' }
-    " Omni
-    " let g:deoplete#sources.ruby = ['tag', 'omni', 'buffer', 'file', 'ultisnips']
-    " let g:deoplete#sources.eruby = ['tag', 'omni', 'buffer', 'file', 'ultisnips']
-
-    " Solargraph
-    " let g:deoplete#sources.ruby = ['tag', 'solargraph', 'buffer', 'file', 'ultisnips']
-    " let g:deoplete#sources.eruby = ['tag', 'solargraph', 'buffer', 'file', 'ultisnips']
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    let g:deoplete#enable_at_startup = 1
-    let g:deoplete#enable_fuzzy_completion = 1
-
-
-    " let g:deoplete#custom#option({
-    "       \ 'auto_complete_delay': 200,
-    "       \ 'smart_case': v:true,
-    "       \ 'ignore_case': v:true,
-    "       \ })
-
-    " use tab for completion
-    inoremap <expr><tab> pumvisible() ? "\<C-N>" : "\<TAB>"
-  " Too much memory consumption for TabNine
-  " Plug 'tbodt/deoplete-tabnine', { 'do': './install.sh' }
-    " call deoplete#custom#var('tabnine', { 'line_limit': 500, 'max_num_results': 10, })
   Plug 'airblade/vim-gitgutter'
     highlight clear SignColumn
     highlight GitGutterAdd ctermfg=green guifg=darkgreen
@@ -512,8 +484,6 @@ call plug#begin('~/.config/nvim/plugged')
     let g:airline_symbols.paste = 'Þ'
     let g:airline_symbols.paste = '∥'
     let g:airline_symbols.whitespace = 'Ξ'
-
-
 
     "let g:airline_section_c = '%t'
     let g:airline_section_c = '%F'
@@ -859,7 +829,6 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'troydm/zoomwintab.vim'
     nnoremap <c-w>z :ZoomWinTabToggle<CR>
   Plug 'vim-ruby/vim-ruby'
-  " Plug 'w0rp/ale'
   Plug 'dense-analysis/ale'
     " RUN:
     "$ npm install eslint --save-dev
@@ -869,10 +838,27 @@ call plug#begin('~/.config/nvim/plugged')
     "$ npm install eslint-config-prettier --save-dev
 
     " ALE linting events
+    " augroup ale
+    "   autocmd!
+    "
+    "   " if g:has_async
+    "     autocmd VimEnter *
+    "           \ set updatetime=1000 |
+    "           \ let g:ale_lint_on_text_changed = 0
+    "     autocmd CursorHold * call ale#Queue(0)
+    "     autocmd CursorHoldI * call ale#Queue(0)
+    "     autocmd InsertEnter * call ale#Queue(0)
+    "     autocmd InsertLeave * call ale#Queue(0)
+    "   " else
+    "   "   echoerr "The thoughtbot dotfiles require NeoVim or Vim 8"
+    "   " endif
+    " augroup END
+
+    " ALE linting events
     augroup ale
       autocmd!
 
-      " if g:has_async
+      if g:has_async
         autocmd VimEnter *
               \ set updatetime=1000 |
               \ let g:ale_lint_on_text_changed = 0
@@ -880,31 +866,31 @@ call plug#begin('~/.config/nvim/plugged')
         autocmd CursorHoldI * call ale#Queue(0)
         autocmd InsertEnter * call ale#Queue(0)
         autocmd InsertLeave * call ale#Queue(0)
-      " else
-      "   echoerr "The thoughtbot dotfiles require NeoVim or Vim 8"
-      " endif
+      else
+        echoerr "require NeoVim or Vim 8"
+      endif
     augroup END
 
     " Turn on manually
     let g:ale_fix_on_save = 1
     let g:ale_javascript_prettier_use_local_config = 1
+
+    " \ 'elixir': ['dialyxir', 'elixir_ls'],
     let g:ale_linters = {
-          \ 'elixir': ['dialyxir', 'elixir_ls'],
           \ 'javascript': ['eslint'],
-          \ 'coffee': ['coffeelint'],
-          \ 'haml': ['hamllint'],
           \ 'ruby': ['rubocop', 'rails_best_practices']
           \ }
+
+    " \ 'elixir': ['mix_format'],
     let g:ale_fixers = {
-    \ 'javascript': ['prettier', 'eslint'],
-    \ 'haml': ['rubocop'],
+    \ 'javascript': ['eslint', 'prettier'],
     \ 'json': ['prettier'],
-    \ 'elixir': ['mix_format'],
     \ 'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop']
     \ }
 
     let g:ale_sign_error = '>>'
     let g:ale_sign_warning = '--'
+
   Plug 'pangloss/vim-javascript'
     let g:javascript_plugin_flow = 1
   Plug 'prettier/vim-prettier', {

@@ -406,29 +406,6 @@ call plug#begin('~/.config/nvim/plugged')
   " Install solargraph
   " RUN: $ gem install solargraph
   " Install Plugin
-  "
-  " A Fast & Minimalism Style Code Completion Plugin for vim/nvim.
-  Plug 'jayli/vim-easycomplete'
-  " Might want to disable this - Used for snippets
-  Plug 'SirVer/ultisnips'
-    noremap gr :EasyCompleteReference<CR>
-    noremap gd :EasyCompleteGotoDefinition<CR>
-    noremap rn :EasyCompleteRename<CR>
-    noremap gb :BackToOriginalBuffer<CR>
-
-    let g:easycomplete_scheme="rider"
-    let g:easycomplete_nerd_font = 1
-    let g:easycomplete_sign_text = {
-          \   'error':       "◉",
-          \   'warning':     "▲",
-          \   'information': '◎',
-          \   'hint':        '▧'
-          \ }
-
-    " NOTES:
-    " Set let g:easycomplete_diagnostics_enable = 0 to disable lsp diagnostics.
-    " Set let g:easycomplete_lsp_checking = 0 to disable lsp checking for installation.
-    " Set let g:easycomplete_signature_enable = 0 to disable lsp signature checking.
 
   Plug 'airblade/vim-gitgutter'
     highlight clear SignColumn
@@ -819,42 +796,33 @@ call plug#begin('~/.config/nvim/plugged')
     "$ npm install eslint-config-prettier --save-dev
 
     " ALE linting events
-    " augroup ale
-    "   autocmd!
-    "
-    "   " if g:has_async
-    "     autocmd VimEnter *
-    "           \ set updatetime=1000 |
-    "           \ let g:ale_lint_on_text_changed = 0
-    "     autocmd CursorHold * call ale#Queue(0)
-    "     autocmd CursorHoldI * call ale#Queue(0)
-    "     autocmd InsertEnter * call ale#Queue(0)
-    "     autocmd InsertLeave * call ale#Queue(0)
-    "   " else
-    "   "   echoerr "The thoughtbot dotfiles require NeoVim or Vim 8"
-    "   " endif
-    " augroup END
-
-    " ALE linting events
     augroup ale
       autocmd!
-
-      if g:has_async
-        autocmd VimEnter *
-              \ set updatetime=1000 |
-              \ let g:ale_lint_on_text_changed = 0
-        autocmd CursorHold * call ale#Queue(0)
-        autocmd CursorHoldI * call ale#Queue(0)
-        autocmd InsertEnter * call ale#Queue(0)
-        autocmd InsertLeave * call ale#Queue(0)
-      else
-        echoerr "require NeoVim or Vim 8"
-      endif
+      autocmd VimEnter *
+            \ set updatetime=1000 |
+            \ let g:ale_lint_on_text_changed = 0
+      autocmd CursorHold * call ale#Queue(0)
+      autocmd CursorHoldI * call ale#Queue(0)
+      autocmd InsertEnter * call ale#Queue(0)
+      autocmd InsertLeave * call ale#Queue(0)
     augroup END
+
+    let g:ale_echo_cursor = 0
 
     " Turn on manually
     let g:ale_fix_on_save = 1
     let g:ale_javascript_prettier_use_local_config = 1
+
+
+    # TODO: remove
+    " " Using easycomplete for Completion
+    "   let g:ale_completion_enabled = 0
+    "   let g:ale_completion_autoimport = 0
+    "   let g:ale_disable_lsp = 0
+
+    " Disable whitespace warnings
+    let g:ale_warn_about_trailing_whitespace = 0
+    let g:ale_virtualtext_cursor = 0
 
     " \ 'elixir': ['dialyxir', 'elixir_ls'],
     let g:ale_linters = {
